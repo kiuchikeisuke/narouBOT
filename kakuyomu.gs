@@ -65,9 +65,9 @@ function checkKakuyomuUpdateAll() {
     if(data[i][5] == true && data[i][1] != page) {
       var user = data[i][4];
       var title = data[i][2];
-      params = latestEpisodeHtml.match(/<span class="widget-toc-episode-titleLabel">.+<\/span>/);
+      params = latestEpisodeHtml.match(/<span class="widget-toc-episode-titleLabel js-vertical-composition-item">.+<\/span>/);
       param = params[0];
-      var subTitle = param.substring('<span class="widget-toc-episode-titleLabel">'.length,param.length - '</span>'.length);
+      var subTitle = param.substring('<span class="widget-toc-episode-titleLabel js-vertical-composition-item">'.length,param.length - '</span>'.length);
       var url = Kakuyomu.baseUrl + id + "/episodes/" + page;
       saveKakuyomuPage(id, page, subTitle, user);
 
