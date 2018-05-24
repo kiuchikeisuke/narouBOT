@@ -51,17 +51,27 @@ function delKakuyomuPage(id, user) {
 function checkKakuyomuUpdateAll() {
   var sheet = getKakuyomuSheet();
   var data = sheet.getDataRange().getValues();
-
+  
   for(var i = 0; i < data.length; i++) {
     var id = data[i][0];
     var parentUrl = Kakuyomu.baseUrl + id;
     var html = UrlFetchApp.fetch(parentUrl).getContentText();
     var episodesHtml = Parser.data(html).from('<li class="widget-toc-episode">').to('</li>').iterate();
-
+    
     var latestEpisodeHtml = episodesHtml[episodesHtml.length - 1];
     var params = latestEpisodeHtml.match(/<a href=".+">/);
     var param = params[0];
-    var page = param.substring('<a href="'.length,param.length - '">'.length).split("/")[4];
+    var items = param.split(" ");
+    var hrefItem = null;
+    for each(var item in items) {
+      if(item.match(/href=".+"/)) {
+           hrefItem = item;
+      }
+    }
+    if (hrefItem == null) {
+      continue;
+    }
+    var page = hrefItem.substring('href=\"'.length, hrefItem.length - '\"'.length).split("/")[4];
     if(data[i][5] == true && data[i][1] != page) {
       var user = data[i][4];
       var title = data[i][2];
@@ -70,7 +80,7 @@ function checkKakuyomuUpdateAll() {
       var subTitle = param.substring('<span class="widget-toc-episode-titleLabel js-vertical-composition-item">'.length,param.length - '</span>'.length);
       var url = Kakuyomu.baseUrl + id + "/episodes/" + page;
       saveKakuyomuPage(id, page, subTitle, user);
-
+      
       notifyUpdate2Slack(title, user, url);
     }
   }
